@@ -36,7 +36,8 @@ stepwiseGrid<-function(FUN,
               #  a list where each element is a sequence corresponding to a hyperpameter
   ## minimize : whether it is a minimization(default) or maximization(input FALSE) problem
   ## updateMesh : a single number k or a vector (k1,k2,...)
-              # new k1 points will be added between current optimum and adjacent choice along 1st hyperparameter, k2 along 2nd one, ...
+              # new k1 points will be added between the current optimum and the midway to adjacent choice along 1st hyperparameter, k2 along 2nd one, ...
+              # so, updated grid is of size (2k1+3)*(2k2+3)*...
   ## update : number of times the grid to be updated
           # put 0 if initial grid is enough
   ## plotting : possible function values will be plotted (upto 2D case only)
