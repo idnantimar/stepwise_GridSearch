@@ -115,7 +115,7 @@ while(step<=update){
                          A = currentGrid[[t]]
                          ix = ixOpt[t]
                          k = K[t]
-                         return(union(seq(A[max(ix-1,1)],(A[ix]+A[max(ix-1,1)])/2,length.out=k),
+                         return(union(rev(seq(A[ix],(A[ix]+A[max(ix-1,1)])/2,length.out=k)),
                                seq(A[ix],(A[min(ix+1,length(A))]+A[ix])/2,length.out=k)))
                          })  
   
