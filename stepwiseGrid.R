@@ -1,11 +1,14 @@
 library(NMOF)
 library(corrplot)
 library(parallel)
+library(xfun)
 
 
-gridSearch_Parallel<-function(MINIMIZE,currentGrid,clust=makeCluster(detectCores()-1),export=NULL){
-  
-  clusterExport(clust,export)
+gridSearch_Parallel<-function(MINIMIZE,currentGrid,clust=makeCluster(detectCores()-1),export_data=NULL,needed_packages=list("base")){
+
+  clusterExport(clust,export_data)
+  clusterExport(clust,"needed_packages",envir = environment())
+  clusterEvalQ(clust,xfun::pkg_attach(needed_packages))
   
   expandGrid = expand.grid(currentGrid)
   VALUES = parApply(clust, X = expandGrid, MARGIN = 1,FUN = MINIMIZE) ## the main computation chunk
@@ -28,7 +31,7 @@ stepwiseGrid<-function(FUN,
                 minimize = TRUE ,
                 updateMesh=2,update=1,
                 plotting=FALSE,
-                para = list(detectCores()-1, ls(envir = .GlobalEnv)) ){
+                para = list(detectCores()-1, ls(envir = .GlobalEnv),loadedNamespaces()) ){
   
   
   ## FUN : the objective function , to be minimized over the grid of hyperparameters
@@ -42,7 +45,8 @@ stepwiseGrid<-function(FUN,
           # put 0 if initial grid is enough
   ## plotting : possible function values will be plotted (upto 2D case only)
   ## para : whether to use parallel computation or not
-        # input a list containing - 'number of clusters' & 'list of variables and functions to be exported' 
+        # input is a list containing - 'number of clusters' & 'list of variables and functions to be exported' , 'list of libraries in use as list("package_name1","package_name2",...)'
+        # If not sure about input, don't change the default one. But using appropriate input will be efficient
         # to disable parallel computation input NULL
 
 
