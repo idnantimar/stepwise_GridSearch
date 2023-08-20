@@ -55,7 +55,9 @@ if(is.null(para)){
   METHOD = function(MINIMIZE,currentGrid) NMOF::gridSearch(MINIMIZE,currentGrid,method = 'loop',printDetail = F)
 }else{
   clust=makeCluster(para[[1]])
-  METHOD = function(MINIMIZE,currentGrid) gridSearch_Parallel(MINIMIZE,currentGrid,clust,para[[2]])
+  export = para[[2]]
+  packages = para[[3]]
+  METHOD = function(MINIMIZE,currentGrid) gridSearch_Parallel(MINIMIZE,currentGrid,clust,export,packages)
 } 
 
 
@@ -69,13 +71,13 @@ if(plotting*(dimPar==2)){
   plot_it<-function(currentGrid,currentSoln,step){
     cat(c("\n",paste("Step",step),rep("..",step+1),"\n"),sep = "")
     
-    r = length(currentGrid[[1]])
+    try({r = length(currentGrid[[1]])
     c = length(currentGrid[[2]])
     val = matrix(currentSoln$values,nrow=r)*ifelse(minimize,1,-1)
     rownames(val) = currentGrid[[1]]
     colnames(val) = currentGrid[[2]]
     corrplot(val,is.corr = F,method = 'color')
-    mtext(paste('step',step,ifelse(minimize," | min"," | max")),side=ifelse(r>=c,4,1))
+    mtext(paste('step',step,ifelse(minimize," | min"," | max")),side=ifelse(r>=c,4,1))})
   }
   plot_it(initialGrid,soln,0)
   
@@ -83,8 +85,8 @@ if(plotting*(dimPar==2)){
   plot_it<-function(currentGrid,currentSoln,step){
     cat(c("\n",paste("Step",step),rep("..",step+1),"\n"),sep = "")
     
-    val = ifelse(minimize,1,-1)*currentSoln$values
-    plot(currentGrid[[1]], val,type = 'b',col='blue',xlab='hyperparameter',ylab = 'value',main=paste('step',step,ifelse(minimize," | min"," | max")))
+     try({val = ifelse(minimize,1,-1)*currentSoln$values
+    plot(currentGrid[[1]], val,type = 'b',col='blue',xlab='hyperparameter',ylab = 'value',main=paste('step',step,ifelse(minimize," | min"," | max")))})
   }
   plot_it(initialGrid,soln,0)
   
