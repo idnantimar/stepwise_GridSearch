@@ -10,16 +10,8 @@ gridSearch_Parallel<-function(MINIMIZE,currentGrid,clust=makeCluster(detectCores
   clusterExport(clust,"needed_packages",envir = environment())
   clusterEvalQ(clust,xfun::pkg_attach(needed_packages))
   
-  expandGrid = expand.grid(currentGrid)
-  VALUES = parApply(clust, X = expandGrid, MARGIN = 1,FUN = MINIMIZE) ## the main computation chunk
-  optVal = min(VALUES)
-  opt_ix = which(VALUES==optVal)
-  if(length(opt_ix)>1) opt_ix = sample(opt_ix,1) # if multiple minima, randomly choose one
+  Out = NMOF::gridSearch(MINIMIZE,currentGrid,method = 'snow',printDetail = F,cl = clust)
   
-  Out = list()
-  Out[['minfun']] = optVal
-  Out[['minlevels']] = as.numeric(expandGrid[opt_ix,])
-  Out[['values']] = VALUES
   return(Out)
 }
 
@@ -34,7 +26,7 @@ stepwiseGrid<-function(FUN,
                 para = list(detectCores()-1, ls(envir = .GlobalEnv),loadedNamespaces()) ){
   
   
-  ## FUN : the objective function , to be minimized over the grid of hyperparameters
+  ## FUN : the objective function , to be minimized/maximized over the grid of hyperparameters
   ## initialGrid : possible choices of hyperparameters to start with
               #  a list where each element is a sequence corresponding to a hyperpameter
   ## minimize : whether it is a minimization(default) or maximization(input FALSE) problem
